@@ -1,0 +1,54 @@
+straightFlushCheck: id
+	"Checks for straight flush"
+
+	| hand rank suit check comboExist comboBlock combo |
+
+	"Declares a new dictionary for rank and suit"
+	rank := Dictionary new.
+	1 to: 52 do: [ :i | rank at: i asString asSymbol put: false ].
+
+	suit := Dictionary new.
+	suit at: #club    put: 0.
+	suit at: #diamond put: 0.
+	suit at: #heart   put: 0.
+	suit at: #spade   put: 0.
+
+	comboExist := false.
+	combo := #().
+
+	id = 1
+		ifTrue:  [ hand := playerOneHand ]
+		ifFalse: [ hand := playerTwoHand ].
+
+	"Checks if it is a straight and creates a straight flush"
+	comboBlock := [ :start :end :suitLetter |
+		start to: end do: [ :begin | check := true.
+			0 to: 4 do: [ :increment |
+				(rank at: (begin + increment) asString asSymbol)
+					ifFalse: [ check := false ] ].
+				check
+					ifTrue: [ combo := #() . comboExist := true.
+						begin to: begin + 4 do: [ :index | combo := combo , {(index asString , suitLetter)} ] ].
+		comboExist
+			ifTrue: [ id = 1
+				ifTrue:  [ firstCombo := combo ]
+				ifFalse: [ secondCombo := combo ].
+				^ true ]
+		]
+	].
+
+	"Populates the suit dictionary and rank dictionary"
+	1 to: hand size do: [ :i |
+		rank at: (hand at: i) asString asSymbol put: true.
+		((hand at: i) between: 1  and: 13) ifTrue: [ suit at: #club    put: (suit at: #club)    + 1 ].
+		((hand at: i) between: 14 and: 26) ifTrue: [ suit at: #diamond put: (suit at: #diamond) + 1 ].
+		((hand at: i) between: 27 and: 39) ifTrue: [ suit at: #heart   put: (suit at: #heart)   + 1 ].
+		((hand at: i) between: 40 and: 52) ifTrue: [ suit at: #spade   put: (suit at: #spade)   + 1 ] ].
+
+	"Checks if it is a flush"
+	(suit at: #club)    >= 5 ifTrue: [ comboBlock value: 1  value: 9  value: 'C' ].
+	(suit at: #diamond) >= 5 ifTrue: [ comboBlock value: 14 value: 22 value: 'D' ].
+	(suit at: #heart)   >= 5 ifTrue: [ comboBlock value: 27 value: 35 value: 'H' ].
+	(suit at: #spade)   >= 5 ifTrue: [ comboBlock value: 40 value: 48 value: 'S' ].
+
+	^ false.

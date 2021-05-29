@@ -1,0 +1,58 @@
+kicker
+	"Starts the kicker to determine a winner during a tie"
+
+	| rankOneHand rankTwoHand valueOne valueTwo card tempHand |
+
+	valueOne := -1.
+	valueTwo := -1.
+
+	rankOneHand := playerOneHand copy.
+	rankTwoHand := playerTwoHand copy.
+
+	1 to: handSize do: [ :i |
+		card := (rankOneHand at: i) % 13.
+		card = 0
+			ifTrue:  [ rankOneHand at: i put: 13 ]
+			ifFalse: [ rankOneHand at: i put: card % 13 ].
+
+		card := (rankTwoHand at: i) % 13.
+		card = 0
+			ifTrue:  [ rankTwoHand at: i put: 13 ]
+			ifFalse: [ rankTwoHand at: i put: card % 13 ] ].
+
+	rankOneHand sort.
+	rankTwoHand sort.
+
+	[ valueOne = valueTwo ] whileTrue: [
+		rankOneHand isEmpty ifTrue: [ ^ 'TIED. Split the pot!' ].
+
+		rankOneHand first = 1
+			"If the first card is a 1"
+			ifTrue: [
+				valueOne := 14.
+				tempHand := #().
+				2 to: rankOneHand size do: [ :i | tempHand := tempHand , {(rankOneHand at: i)} ] ]
+			"If the first card is not a 1"
+			ifFalse: [
+				valueOne := rankOneHand last.
+				tempHand := #().
+				1 to: rankOneHand size - 1 do: [ :i | tempHand := tempHand , {(rankOneHand at: i)} ] ].
+		rankOneHand := tempHand.
+
+		rankTwoHand first = 1
+			"If the first card is a 1"
+			ifTrue: [
+				valueTwo := 14.
+				tempHand := #().
+				2 to: rankTwoHand size do: [ :i | tempHand := tempHand , {(rankTwoHand at: i)} ] ]
+			"If the first card is not a 1"
+			ifFalse: [
+				valueTwo := rankTwoHand last.
+				tempHand := #().
+				1 to: rankTwoHand size - 1 do: [ :i | tempHand := tempHand , {(rankTwoHand at: i)} ] ].
+		rankTwoHand := tempHand.
+	].
+
+	valueOne > valueTwo
+		ifTrue:  [ ^ firstCombo ]
+		ifFalse: [ ^ secondCombo ]

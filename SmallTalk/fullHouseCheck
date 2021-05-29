@@ -1,0 +1,48 @@
+fullHouseCheck: id
+	"Checks for full house"
+
+	| hand rank card triple pair suitLetter combo |
+
+	rank := Dictionary new.
+	0 to: 12 do: [ :i | rank at: (i asString asSymbol) put: 0 ].
+
+	pair := -1.
+	triple := -1.
+	combo := #().
+	duplicateKicker := 0.
+
+	id = 1
+		ifTrue:  [ hand := playerOneHand ]
+		ifFalse: [ hand := playerTwoHand ].
+
+	"Populates the rank array with the number of cards with the same value"
+	1 to: handSize do: [ :i |
+		card := (((hand at: i) % 13) asString asSymbol).
+		rank at: card put: ((rank at: card) + 1) ].
+
+	"Finds the highest triple and pair"
+	2 to: 12 do: [ :i | ((rank at: (i asString asSymbol)) = 3) ifTrue: [ triple := i ] ].
+	2 to: 12 do: [ :i | ((rank at: (i asString asSymbol)) = 2) ifTrue: [ pair   := i ] ].
+
+	((rank at: #'0') = 3) ifTrue: [ triple := 0 ].
+	((rank at: #'1') = 3) ifTrue: [ triple := 1 ].
+
+	((rank at: #'0') = 2) ifTrue: [ pair := 0 ].
+	((rank at: #'1') = 2) ifTrue: [ pair := 1 ].
+
+	"If there is a triple and pair, create a combo for full house"
+	((triple between: 0 and: 12) & (pair between: 0 and: 12))
+		ifTrue: [ 1 to: handSize do: [ :i | card := hand at: i .
+			(((card % 13) = triple) | ((card % 13) = pair))
+				ifTrue: [
+					suitLetter := self getSuit: card.
+					duplicateKicker := duplicateKicker + (cardValue at: ((card % 13) asString asSymbol)).
+					(card % 13) = 0
+						ifTrue:  [ combo := combo , { 13 asString, suitLetter } ]
+						ifFalse: [ combo := combo , { (card % 13) asString, suitLetter } ] ] ].
+
+		id = 1
+			ifTrue:  [ firstCombo  := combo ]
+			ifFalse: [ secondCombo := combo ] . ^ true ].
+
+	^ false 

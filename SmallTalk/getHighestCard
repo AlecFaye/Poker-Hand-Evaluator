@@ -1,0 +1,43 @@
+getHighestCard
+	"Assigns the highest card to combo"
+
+	| rankOneHand rankTwoHand suitLetter card |
+
+	rankOneHand := playerOneHand copy.
+	rankTwoHand := playerTwoHand copy.
+
+	1 to: handSize do: [ :i |
+		card := (rankOneHand at: i) % 13.
+		card = 0
+			ifTrue:  [ rankOneHand at: i put: 13 ]
+			ifFalse: [ rankOneHand at: i put: card % 13 ].
+
+		card := (rankTwoHand at: i) % 13.
+		card = 0
+			ifTrue:  [ rankTwoHand at: i put: 13 ]
+			ifFalse: [ rankTwoHand at: i put: card % 13 ] ].
+
+	rankOneHand sort.
+	rankTwoHand sort.
+
+	rankOneHand first = 1
+		ifTrue:  [ 1 to: handSize do: [ :i | card := playerOneHand at: i .
+				(card % 13) = 1
+					ifTrue: [ suitLetter := self getSuit: card . firstCombo := { 1 asString , suitLetter } ] ].]
+		ifFalse: [ 1 to: handSize do: [ :i | card := playerOneHand at: i .
+				rankOneHand last = 13
+					ifTrue:  [ (card % 13) = 0
+						ifTrue: [ suitLetter := self getSuit: card . firstCombo := { 13 asString , suitLetter } ] ]
+					ifFalse: [ (card % 13) = rankOneHand last
+						ifTrue: [ suitLetter := self getSuit: card . firstCombo := { (card % 13) asString , suitLetter } ] ].] ].
+
+	rankTwoHand first = 1
+		ifTrue:  [ 1 to: handSize do: [ :i | card := playerTwoHand at: i .
+				(card % 13) = 1
+					ifTrue: [ suitLetter := self getSuit: card . secondCombo := { 1 asString , suitLetter } ] ].]
+		ifFalse: [ 1 to: handSize do: [ :i | card := playerTwoHand at: i .
+				rankTwoHand last = 13
+					ifTrue:  [ (card % 13) = 0
+						ifTrue: [ suitLetter := self getSuit: card . secondCombo := { 13 asString , suitLetter } ] ]
+					ifFalse: [ (card % 13) = rankTwoHand last
+						ifTrue: [ suitLetter := self getSuit: card . secondCombo := { (card % 13) asString , suitLetter } ] ].] ].

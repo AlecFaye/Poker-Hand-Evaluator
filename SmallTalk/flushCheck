@@ -1,0 +1,52 @@
+flushCheck: id
+	"Checks for flush"
+
+	| hand suit card comboBlock combo recent |
+
+	"Declares a dictionary to keep count of all the suits"
+	suit := Dictionary new.
+	suit at: #club    put: 0.
+	suit at: #diamond put: 0.
+	suit at: #heart   put: 0.
+	suit at: #spade   put: 0.
+
+	id = 1
+		ifTrue:  [ hand := playerOneHand ]
+		ifFalse: [ hand := playerTwoHand ].
+
+	hand := hand copy reverse.
+	combo := #().
+	duplicateKicker := 0.
+	recent := 0.
+
+	"Creates a combo for the hand using the highest value"
+	comboBlock := [ :start :end :suitLetter |
+		1 to: handSize do: [ :i | card := hand at: i.
+			(card between: start and: end)
+				ifTrue: [ (combo size) < 5
+						ifTrue: [ (card % 13) = 0
+							ifTrue:  [ combo := combo , { 13 asString , suitLetter } ]
+							ifFalse: [ combo := combo , { (card % 13) asString , suitLetter } ].
+							recent := (card % 13).
+							duplicateKicker := duplicateKicker + (cardValue at: ((card % 13) asString asSymbol)) ]
+						ifFalse: [ card = start ifTrue: [ combo at: 5 put: ( 1 asString , suitLetter ) .
+								duplicateKicker := duplicateKicker - (cardValue at: (recent asString asSymbol)) + (cardValue at: (1 asString asSymbol)) ] ] ] ].
+
+		id = 1
+			ifTrue:  [ firstCombo  := combo ]
+			ifFalse: [ secondCombo := combo ] . ^ true ].
+
+	"Populates the suit dictionary"
+	1 to: handSize do: [ :i |
+		((hand at: i) between: 1  and: 13) ifTrue: [ suit at: #club    put: (suit at: #club)    + 1 ].
+		((hand at: i) between: 14 and: 26) ifTrue: [ suit at: #diamond put: (suit at: #diamond) + 1 ].
+		((hand at: i) between: 27 and: 39) ifTrue: [ suit at: #heart   put: (suit at: #heart)   + 1 ].
+		((hand at: i) between: 40 and: 52) ifTrue: [ suit at: #spade   put: (suit at: #spade)   + 1 ] ].
+
+	"Determines if there is a flush for each suit"
+	(suit at: #club)    >= 5 ifTrue: [ comboBlock value: 1  value: 13 value: 'C' ].
+	(suit at: #diamond) >= 5 ifTrue: [ comboBlock value: 14 value: 26 value: 'D' ].
+	(suit at: #heart)   >= 5 ifTrue: [ comboBlock value: 27 value: 39 value: 'H' ].
+	(suit at: #spade)   >= 5 ifTrue: [ comboBlock value: 40 value: 52 value: 'S' ].
+
+	^ false.

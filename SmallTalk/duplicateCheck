@@ -1,0 +1,50 @@
+duplicateCheck: id type: duplicateCount
+	"Checks for pair or triple"
+
+	| rank hand card duplicateType suitLetter combo |
+
+	"Initializes and declares a dictionary"
+	rank := Dictionary new.
+	0 to: 12 do: [ :i | rank at: i asString asSymbol put: 0 ].
+
+	duplicateType := -1.
+	combo := #().
+
+	id = 1
+		ifTrue:  [ hand := playerOneHand ]
+		ifFalse: [ hand := playerTwoHand ].
+
+	"Populates the dictionary depending on the rank"
+	1 to: handSize do: [ :i |
+		card := ((hand at: i) % 13) asString asSymbol .
+		rank at: card put: ((rank at: card) + 1) ].
+
+	"Finds the duplicate type"
+	2 to: 12 do: [ :i | ((rank at: i asString asSymbol) = duplicateCount)
+		ifTrue: [ duplicateType := i ] ].
+
+	((rank at: #'0') = duplicateCount)
+		ifTrue: [ duplicateType := 0 ].
+
+	((rank at: #'1') = duplicateCount)
+		ifTrue: [ duplicateType := 1 ].
+
+	"If the duplicate exists, create the combo"
+	(duplicateType between: 0 and: 12)
+		ifTrue: [ 1 to: handSize do: [ :i |
+			card := hand at: i .
+			suitLetter := self getSuit: card .
+
+			(card % 13) = duplicateType
+				ifTrue: [
+					(duplicateType = 0)
+						ifTrue:  [combo := combo , { 13 asString , suitLetter } ]
+						ifFalse: [combo := combo , { (card % 13) asString , suitLetter } ] ] ].
+
+		id = 1
+			ifTrue:  [ firstCombo  := combo ]
+			ifFalse: [ secondCombo := combo ] .
+
+		duplicateKicker := cardValue at: (duplicateType asString asSymbol) . ^ true ].
+
+	^ false.

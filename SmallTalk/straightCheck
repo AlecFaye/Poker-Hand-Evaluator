@@ -1,0 +1,109 @@
+straightCheck: id
+	"Checks for straight"
+
+	| hand rank card check combo comboBegin suitLetter found |
+
+	"Initializes and declares a dictionary to store rank existence"
+	rank := Dictionary new.
+	0 to: 12 do: [ :i | rank at: (i asString asSymbol) put: false ].
+
+	comboBegin := -1.
+	combo := #().
+
+	id = 1
+		ifTrue:  [ hand := playerOneHand ]
+		ifFalse: [ hand := playerTwoHand ].
+
+	"If a rank exists, it becomes true"
+	1 to: hand size do: [ :i | card := ((hand at: i) % 13) asString asSymbol . rank at: card put: true ].
+
+	"Finds where the straight begins"
+	1 to: 8 do: [ :begin | check := true.
+		0 to: 4 do: [ :increment |
+			(rank at: (begin + increment) asString asSymbol)
+				ifFalse: [ check := false ] ].
+		check
+			ifTrue: [ comboBegin := begin ]
+	].
+
+	"Checks if the straight includes a King"
+	((rank at: #'9') & (rank at: #'10') & (rank at: #'11') & (rank at: #'12') & (rank at: #'0'))
+		ifTrue: [ comboBegin := 9 ].
+
+	"Checks if the straight includes an Ace"
+	((rank at: #'10') & (rank at: #'11') & (rank at: #'12') & (rank at: #'0') & (rank at: #'1'))
+		ifTrue: [ comboBegin := 10 ].
+
+	(comboBegin between: 1 and: 10)
+		ifTrue: [
+			"Makes a straight that includes an Ace"
+			comboBegin = 10
+				ifTrue: [ comboBegin to: comboBegin + 2 do: [ :i | found := true .
+					1 to: hand size do: [ :j |
+						card := hand at: j .
+						suitLetter := self getSuit: card.
+						((card % 13) = i & found)
+							ifTrue: [ combo := combo , { ((card % 13) asString , suitLetter) } . found := false ]
+						].
+					].
+					found := true.
+					1 to: hand size do: [ :index |
+						card := hand at: index .
+						suitLetter := self getSuit: card.
+						(card % 13 = 0 & found)
+							ifTrue: [ combo := combo , { (13 asString , suitLetter) } . found := false ]
+					].
+					found := true.
+					1 to: hand size do: [ :index |
+						card := hand at: index .
+						suitLetter := self getSuit: card.
+						(card % 13 = 1 & found)
+							ifTrue: [ combo := combo , { (1 asString , suitLetter) } . found := false ]
+					].
+				id = 1
+					ifTrue:  [ firstCombo := combo ]
+					ifFalse: [ secondCombo := combo ].
+					^ true.
+				].
+
+			"Makes a straight that includes a King"
+			comboBegin = 9
+				ifTrue: [ comboBegin to: comboBegin + 3 do: [ :i | found := true .
+					1 to: hand size do: [ :j |
+						card := hand at: j .
+						suitLetter := self getSuit: card.
+						((card % 13) = i & found)
+							ifTrue: [ combo := combo , { ((card % 13) asString , suitLetter) } . found := false ]
+						].
+					].
+					found := true.
+					1 to: hand size do: [ :index |
+						card := hand at: index .
+						suitLetter := self getSuit: card.
+						(card % 13 = 0 & found)
+							ifTrue: [ combo := combo , { (13 asString , suitLetter) } . found := false ]
+					].
+				id = 1
+					ifTrue:  [ firstCombo := combo ]
+					ifFalse: [ secondCombo := combo ].
+					^ true.
+				].
+
+			"Makes the general straight"
+			(comboBegin between: 1 and: 8)
+			ifTrue: [ comboBegin to: comboBegin + 4 do: [ :i | found := true .
+				1 to: hand size do: [ :j |
+					card := hand at: j .
+					suitLetter := self getSuit: card.
+					((card % 13) = i & found)
+						ifTrue: [ combo := combo , { ((card % 13) asString , suitLetter) } . found := false ]
+					].
+				].
+			].
+			id = 1
+				ifTrue:  [ firstCombo := combo ]
+				ifFalse: [ secondCombo := combo ].
+			^ true.
+		].
+
+	^ false.

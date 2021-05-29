@@ -1,0 +1,30 @@
+deal: cards
+	"Deals cards to the players"
+
+	| firstHand secondHand tableHand firstValue secondValue |
+
+	self ready.
+
+	firstHand  := { cards at: 1 . cards at: 3 }.
+	secondHand := { cards at: 2 . cards at: 4 }.
+	tableHand  := #().
+	5 to: 9 do: [ :index | tableHand := tableHand , { cards at: index } ].
+
+	playerOneHand := (firstHand ,  tableHand) sort.
+	playerTwoHand := (secondHand , tableHand) sort.
+
+	self getHighestCard.
+
+	firstValue  := self evaluateHand: playerOneHand current: 1.
+	secondValue := self evaluateHand: playerTwoHand current: 2.
+
+	firstValue = secondValue
+		ifTrue: [ ^ self kicker].
+
+	firstValue > secondValue
+		ifTrue: [ ^ firstCombo ].
+
+	secondValue > firstValue
+		ifTrue: [ ^ secondCombo ].
+
+	

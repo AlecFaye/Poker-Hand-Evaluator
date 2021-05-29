@@ -1,0 +1,7 @@
+getSuit: card
+	"Sets up the suitLetter based on the card number"
+
+	(card between: 1  and: 13) ifTrue: [ ^ 'C' ].
+	(card between: 14 and: 26) ifTrue: [ ^ 'D' ].
+	(card between: 27 and: 39) ifTrue: [ ^ 'H' ].
+	(card between: 40 and: 52) ifTrue: [ ^ 'S' ]

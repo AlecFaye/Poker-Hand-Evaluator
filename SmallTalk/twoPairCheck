@@ -1,0 +1,62 @@
+twoPairCheck: id
+	"Checks for two pairs"
+
+	| hand rank card firstPair secondPair suitLetter combo |
+
+	"Initializes and declares a dictionary to store rank"
+	rank := Dictionary new.
+	0 to: 12 do: [ :i | rank at: i asString asSymbol put: 0 ].
+
+	firstPair  := -1.
+	secondPair := -1.
+	combo := #().
+
+	id = 1
+		ifTrue:  [ hand := playerOneHand ]
+		ifFalse: [ hand := playerTwoHand ].
+
+	"Populates the rank dictionary"
+	1 to: handSize do: [ :i |
+		card := ((hand at: i) % 13) asString asSymbol.
+		rank at: card put: (rank at: card) + 1 ].
+
+	"Finds two pairs"
+	2 to: 12 do: [ :i |
+		(rank at: i asString asSymbol) = 2
+			ifTrue: [ secondPair := firstPair . firstPair := i ] ].
+
+	(rank at: #'0') = 2
+		ifTrue: [ secondPair := firstPair . firstPair := 0 ].
+
+	(rank at: #'1') = 2
+		ifTrue: [ secondPair := firstPair . firstPair := 1 ].
+
+	"If there are two pairs, create a combo"
+	((firstPair = -1) | (secondPair = -1))
+		ifFalse: [ 1 to: handSize do: [ :i |
+			card := hand at: i.
+			suitLetter := self getSuit: card.
+
+			(card % 13) = firstPair
+				ifTrue: [
+					firstPair = 0 ifTrue: [ combo := combo , {(13 asString , suitLetter)} ].
+					firstPair = 1 ifTrue: [ combo := combo , {(1 asString , suitLetter)} ].
+					(firstPair between: 2 and: 13)
+						ifTrue: [ combo := combo , {((card % 13) asString , suitLetter)} ] ].
+
+			(card % 13) = secondPair
+				ifTrue: [
+					secondPair = 0 ifTrue: [ combo := combo , {(13 asString , suitLetter)} ].
+					secondPair = 1 ifTrue: [ combo := combo , {(1 asString , suitLetter)} ].
+					(secondPair between: 2 and: 13)
+						ifTrue: [ combo := combo , {((card % 13) asString , suitLetter)} ] ] ].
+
+			id = 1
+				ifTrue:  [ firstCombo  := combo ]
+				ifFalse: [ secondCombo := combo ].
+
+			duplicateKicker := (cardValue at: (firstPair asString asSymbol)) + (cardValue at: (secondPair asString asSymbol)).
+
+			^ true ].
+
+	^ false

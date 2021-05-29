@@ -1,0 +1,38 @@
+royalFlushCheck: id
+	"Checks for royal flush"
+
+	| hand rank comboExist combo |
+
+	"Declares a new dictionary"
+	rank := Dictionary new.
+	1 to: 52 do: [ :i | rank at: i asString asSymbol put: false ].
+
+	comboExist := false.
+	combo := #().
+
+	id = 1
+		ifTrue:  [ hand := playerOneHand ]
+		ifFalse: [ hand := playerTwoHand ].
+
+	"Determines the hand"
+	1 to: hand size do: [ :i | rank at: (hand at: i) asString asSymbol put: true ].
+
+	"Checks for royal flush through brute force"
+	((rank at: #'1') & (rank at: #'10') & (rank at: #'11') & (rank at: #'12') & (rank at: #'13'))
+		ifTrue: [ combo := #('10C' '11C' '12C' '13C' '1C') . comboExist := true ].
+
+	((rank at: #'14') & (rank at: #'23') & (rank at: #'24') & (rank at: #'25') & (rank at: #'26'))
+		ifTrue: [ combo := #('10D' '11D' '12D' '13D' '1D') . comboExist := true ].
+
+	((rank at: #'27') & (rank at: #'36') & (rank at: #'37') & (rank at: #'38') & (rank at: #'39'))
+		ifTrue: [ combo := #('10H' '11H' '12H' '13H' '1H') . comboExist := true ].
+
+	((rank at: #'40') & (rank at: #'49') & (rank at: #'50') & (rank at: #'51') & (rank at: #'52'))
+		ifTrue: [ combo := #('10S' '11S' '12S' '13S' '1S') . comboExist := true ].
+
+	comboExist
+		ifTrue: [ id = 1
+			ifTrue:  [ firstCombo := combo ]
+			ifFalse: [ secondCombo := combo ] . ^true ].
+
+	^ false.

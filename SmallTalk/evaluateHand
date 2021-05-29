@@ -1,0 +1,40 @@
+evaluateHand: hand current: id
+	"Evaluates the hands and determines the winner"
+
+	"Royal Flush Check"
+	(self royalFlushCheck: id)
+		ifTrue: [ ^ 10 ].
+
+	"Straight Flush Check"
+	(self straightFlushCheck: id)
+		ifTrue: [ ^ 9 ].
+
+	"Four of a Kind Check"
+	(self fourOfAKindCheck: id)
+		ifTrue: [ ^ 8 ].
+
+	"Full House Check"
+	(self fullHouseCheck: id)
+		ifTrue: [ ^ 7 + duplicateKicker ].
+
+	"Flush Check"
+	(self flushCheck: id)
+		ifTrue: [ ^ 6 + duplicateKicker ].
+
+	"Straight Check"
+	(self straightCheck:id)
+		ifTrue: [ ^ 5 ].
+
+	"Three of a Kind Check"
+	(self duplicateCheck: id type: 3)
+		ifTrue: [ ^ 4 + duplicateKicker ].
+
+	"Two Pair Check"
+	(self twoPairCheck: id)
+		ifTrue: [ ^ 3 + duplicateKicker ].
+
+	"Pair Check"
+	(self duplicateCheck: id type: 2)
+		ifTrue: [ ^ 2 + duplicateKicker ].
+
+	^ 1 

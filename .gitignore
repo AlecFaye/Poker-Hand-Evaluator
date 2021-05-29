@@ -1,0 +1,53 @@
+# changes file
+*.changes
+*.chg
+# system image
+*.image
+*.img7
+*.img
+# Pharo Smalltalk Debug log file
+PharoDebug.log
+# playground cache
+/play-cache
+/play-stash
+
+/_build
+/cover
+/deps
+/doc
+/.fetch
+erl_crash.dump
+*.ez
+*.beam
+/config/*.secret.exs
+.elixir_ls/
+
+dist
+dist-*
+cabal-dev
+*.o
+*.hi
+*.hie
+*.chi
+*.chs.h
+*.dyn_o
+*.dyn_hi
+.hpc
+.hsenv
+.cabal-sandbox/
+cabal.sandbox.config
+*.prof
+*.aux
+*.hp
+*.eventlog
+.stack-work/
+cabal.project.local
+cabal.project.local~
+.HTF/
+.ghc.environment.*
+
+debug/
+target/
+Cargo.lock
+**/*.rs.bk
+*.pdb
